@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>Registrar entrada (HU-01)</h2>
+<form method="post">
+  <label>Placa</label>
+  <input type="text" name="placa" required maxlength="10" placeholder="ABC123">
+  <label>Celda</label>
+  <select name="id_celda" required>
+    {% for c in celdas %}
+      <option value="{{ c.id }}">{{ c.codigo }} ({{ c.tipo }})</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Registrar entrada</button>
+</form>
+{% endblock %}

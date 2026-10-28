@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>Registrar salida (HU-02)</h2>
+<form method="post">
+  <label>Placa</label>
+  <input type="text" name="placa" required maxlength="10">
+  <button type="submit">Registrar salida</button>
+</form>
+{% endblock %}

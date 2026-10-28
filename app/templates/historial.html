@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>Historial de entradas y salidas (HU-05)</h2>
+<form method="get">
+  <label>Placa</label>
+  <input type="text" name="placa" value="{{ placa }}">
+  <label>Fecha de entrada</label>
+  <input type="date" name="fecha" value="{{ fecha }}">
+  <button type="submit">Filtrar</button>
+</form>
+<table>
+  <tr><th>Placa</th><th>Celda</th><th>Entrada</th><th>Salida</th></tr>
+  {% for r in registros %}
+  <tr>
+    <td>{{ r.placa }}</td>
+    <td>{{ r.celda.codigo }}</td>
+    <td>{{ r.fecha_entrada.strftime('%d/%m/%Y %H:%M') }}</td>
+    <td>{{ r.fecha_salida.strftime('%d/%m/%Y %H:%M') if r.fecha_salida else 'Dentro' }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4">Sin resultados.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

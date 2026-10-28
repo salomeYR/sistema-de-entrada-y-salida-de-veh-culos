@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>Registrar novedad (HU-04)</h2>
+<form method="post">
+  <label>Placa</label>
+  <input type="text" name="placa" required maxlength="10">
+  <label>Descripción</label>
+  <textarea name="descripcion" rows="3" required maxlength="300"></textarea>
+  <button type="submit">Guardar novedad</button>
+</form>
+
+<h3>Novedades registradas</h3>
+<table>
+  <tr><th>Fecha</th><th>Placa</th><th>Descripción</th></tr>
+  {% for n in novedades %}
+  <tr>
+    <td>{{ n.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+    <td>{{ n.placa }}</td>
+    <td>{{ n.descripcion }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

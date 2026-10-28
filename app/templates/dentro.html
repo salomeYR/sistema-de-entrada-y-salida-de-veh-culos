@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>Vehículos dentro del parqueadero (HU-03)</h2>
+<table>
+  <tr><th>Placa</th><th>Tipo</th><th>Celda</th><th>Hora de entrada</th></tr>
+  {% for r in registros %}
+  <tr>
+    <td>{{ r.placa }}</td>
+    <td>{{ r.vehiculo.tipo }}</td>
+    <td>{{ r.celda.codigo }}</td>
+    <td>{{ r.fecha_entrada.strftime('%d/%m/%Y %H:%M') }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4">No hay vehículos dentro.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
