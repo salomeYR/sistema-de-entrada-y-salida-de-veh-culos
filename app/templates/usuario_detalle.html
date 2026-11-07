@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>{{ usuario.nombre }}
+  {% if usuario.activo %}<span class="tag tag-ok">Activo</span>
+  {% else %}<span class="tag tag-off">Inactivo</span>{% endif %}
+</h2>
+<p>Documento: {{ usuario.documento }} · Teléfono: {{ usuario.telefono or "-" }}</p>
+
+<div class="acciones">
+  <a href="{{ url_for('usuario.usuario_editar', id_usuario=usuario.id) }}">Editar usuario</a>
+  <form method="post" action="{{ url_for('usuario.usuario_estado', id_usuario=usuario.id) }}"
+        {% if usuario.activo %}onsubmit="return confirm('¿Desactivar a este usuario? No podrá ingresar con sus vehículos.');"{% endif %}>
+    <button type="submit">{{ "Desactivar usuario" if usuario.activo else "Reactivar usuario" }}</button>
+  </form>
+  <a href="{{ url_for('usuario.usuarios') }}">Volver al listado</a>
+</div>
+
+<h3>Vehículos</h3>
+{% set vehiculos = usuario.vehiculos | selectattr("activo") | list %}
+{% if vehiculos %}
+<table>
+  <thead>
+    <tr><th>Placa</th><th>Tipo</th><th>Vence</th><th>Mensualidad</th><th>Acciones</th></tr>
+  </thead>
+  <tbody>
+    {% for v in vehiculos %}
+    <tr>
+      <td>{{ v.placa }}</td>
+      <td>{{ v.tipo }}</td>
+      <td>{{ v.mensualidad_vence.strftime("%d/%m/%Y") }}</td>
+      <td>
+        {% if v.mensualidad_vigente %}<span class="tag tag-ok">Vigente</span>
+        {% else %}<span class="tag tag-warn">Vencida</span>{% endif %}
+      </td>
+      <td>
+        <a href="{{ url_for('usuario.vehiculo_editar', placa=v.placa) }}">Editar</a>
+        <form method="post" action="{{ url_for('usuario.vehiculo_retirar', placa=v.placa) }}"
+              style="display:inline"
+              onsubmit="return confirm('¿Retirar el vehículo {{ v.placa }}? Su historial se conserva.');">
+          <button type="submit">Retirar</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Este usuario no tiene vehículos registrados.</p>
+{% endif %}
+
+{% if usuario.activo %}
+<div class="acciones">
+  <a href="{{ url_for('usuario.vehiculo_nuevo', id_usuario=usuario.id) }}">Agregar vehículo</a>
+</div>
+{% else %}
+<p>Reactiva al usuario para agregarle vehículos.</p>
+{% endif %}
+{% endblock %}

@@ -15,9 +15,12 @@ def index():
 def entrada():
     if request.method == "POST":
         try:
-            svc.registrar_entrada(request.form["placa"], int(request.form["id_celda"]))
+            id_celda = int(request.form.get("id_celda", ""))
+            svc.registrar_entrada(request.form.get("placa", ""), id_celda)
             flash("Entrada registrada correctamente.", "ok")
             return redirect(url_for("registro.dentro"))
+        except ValueError:
+            flash("Debes seleccionar una celda válida.", "error")
         except ReglaNegocioError as e:
             flash(str(e), "error")
     return render_template("entrada.html", celdas=svc.celdas_libres())
@@ -27,7 +30,7 @@ def entrada():
 def salida():
     if request.method == "POST":
         try:
-            r = svc.registrar_salida(request.form["placa"])
+            r = svc.registrar_salida(request.form.get("placa", ""))
             flash(f"Salida registrada. Celda {r.celda.codigo} liberada.", "ok")
             return redirect(url_for("registro.dentro"))
         except ReglaNegocioError as e:
@@ -44,7 +47,8 @@ def dentro():
 def novedad():
     if request.method == "POST":
         try:
-            svc.registrar_novedad(request.form["placa"], request.form["descripcion"])
+            svc.registrar_novedad(request.form.get("placa", ""),
+                                  request.form.get("descripcion", ""))
             flash("Novedad registrada.", "ok")
             return redirect(url_for("registro.novedad"))
         except ReglaNegocioError as e:
@@ -56,5 +60,10 @@ def novedad():
 def historial():
     placa = request.args.get("placa", "")
     fecha = request.args.get("fecha", "")
-    return render_template("historial.html", registros=svc.historial(placa, fecha),
+    try:
+        registros = svc.historial(placa, fecha)
+    except ReglaNegocioError as e:
+        flash(str(e), "error")
+        registros = []
+    return render_template("historial.html", registros=registros,
                            placa=placa, fecha=fecha)

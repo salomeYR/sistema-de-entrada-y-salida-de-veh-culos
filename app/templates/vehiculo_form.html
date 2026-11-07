@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>{{ titulo }}</h2>
+<p>Usuario: {{ usuario.nombre }} ({{ usuario.documento }})</p>
+
+<form method="post">
+  <label for="placa">Placa</label>
+  <input type="text" id="placa" name="placa" value="{{ datos.placa }}" maxlength="10"
+         placeholder="ABC123" {% if editando %}readonly{% else %}required{% endif %}>
+
+  <label for="tipo">Tipo</label>
+  <select id="tipo" name="tipo">
+    <option value="carro" {% if datos.tipo == "carro" %}selected{% endif %}>Carro (ABC123)</option>
+    <option value="moto" {% if datos.tipo == "moto" %}selected{% endif %}>Moto (ABC12D)</option>
+  </select>
+
+  <label for="vence">Vencimiento de la mensualidad</label>
+  <input type="date" id="vence" name="vence" value="{{ datos.vence }}" required>
+
+  <div class="acciones">
+    <button type="submit">Guardar vehículo</button>
+    <a href="{{ cancelar }}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

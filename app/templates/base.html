@@ -29,6 +29,10 @@
     <a href="{{ url_for('registro.dentro') }}">Vehículos dentro</a>
     <a href="{{ url_for('registro.novedad') }}">Novedades</a>
     <a href="{{ url_for('registro.historial') }}">Historial</a>
+
+    <a href="{{ url_for('usuario.usuarios') }}">Usuarios</a>
+    <a href="{{ url_for('celda.celdas') }}">Celdas</a>
+    
   </nav>
   <main>
     {% with mensajes = get_flashed_messages(with_categories=true) %}

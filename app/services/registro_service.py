@@ -8,7 +8,8 @@ class ReglaNegocioError(Exception):
 
 
 def celdas_libres():
-    return Celda.query.filter_by(ocupada=False).all()
+    # Iteración 2: las celdas deshabilitadas no se ofrecen ni cuentan como libres.
+    return Celda.query.filter_by(ocupada=False, activa=True).all()
 
 
 def registrar_entrada(placa, id_celda):
@@ -16,6 +17,11 @@ def registrar_entrada(placa, id_celda):
     vehiculo = db.session.get(Vehiculo, placa)
     if not vehiculo:
         raise ReglaNegocioError("El vehículo no está registrado.")
+    # Iteración 2: vehículo retirado o usuario inactivo no pueden ingresar.
+    if not vehiculo.activo:
+        raise ReglaNegocioError("El vehículo fue retirado del sistema.")
+    if not vehiculo.usuario.activo:
+        raise ReglaNegocioError("El usuario está inactivo.")
     if vehiculo.mensualidad_vence < date.today():
         raise ReglaNegocioError("La mensualidad del vehículo está vencida.")
     if RegistroAcceso.query.filter_by(placa=placa, fecha_salida=None).first():
@@ -24,6 +30,8 @@ def registrar_entrada(placa, id_celda):
     celda = db.session.get(Celda, id_celda)
     if not celda:
         raise ReglaNegocioError("La celda no existe.")
+    if not celda.activa:
+        raise ReglaNegocioError("La celda está deshabilitada.")
     if celda.ocupada:
         raise ReglaNegocioError("La celda seleccionada está ocupada.")
     if celda.tipo != vehiculo.tipo:
@@ -68,7 +76,10 @@ def historial(placa=None, fecha=None):
     if placa:
         q = q.filter(RegistroAcceso.placa == placa.strip().upper())
     if fecha:
-        inicio = datetime.strptime(fecha, "%Y-%m-%d")
+        try:
+            inicio = datetime.strptime(fecha, "%Y-%m-%d")
+        except ValueError:
+            raise ReglaNegocioError("La fecha no es válida.")
         q = q.filter(RegistroAcceso.fecha_entrada >= inicio,
                      RegistroAcceso.fecha_entrada < inicio + timedelta(days=1))
     return q.order_by(RegistroAcceso.fecha_entrada.desc()).all()

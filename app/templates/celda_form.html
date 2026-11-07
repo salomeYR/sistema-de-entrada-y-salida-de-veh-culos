@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>{{ titulo }}</h2>
+
+<form method="post">
+  <label for="codigo">Código</label>
+  <input type="text" id="codigo" name="codigo" value="{{ datos.codigo }}" maxlength="10"
+         placeholder="C-6" required>
+
+  <label for="tipo">Tipo</label>
+  <select id="tipo" name="tipo">
+    <option value="carro" {% if datos.tipo == "carro" %}selected{% endif %}>Carro</option>
+    <option value="moto" {% if datos.tipo == "moto" %}selected{% endif %}>Moto</option>
+  </select>
+
+  <div class="acciones">
+    <button type="submit">Guardar celda</button>
+    <a href="{{ url_for('celda.celdas') }}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>Celdas</h2>
+
+<div class="resumen">
+  {% for t, r in resumen.items() %}
+  <div class="tarjeta">
+    <strong>{{ "Carros" if t == "carro" else "Motos" }}</strong><br>
+    Total: {{ r.total }} · Libres: {{ r.libres }} · Ocupadas: {{ r.ocupadas }} · Deshabilitadas: {{ r.deshabilitadas }}
+  </div>
+  {% endfor %}
+</div>
+
+<form method="get" action="{{ url_for('celda.celdas') }}" class="acciones">
+  <label for="tipo">Tipo</label>
+  <select id="tipo" name="tipo">
+    <option value="">Todos</option>
+    <option value="carro" {% if tipo == "carro" %}selected{% endif %}>Carro</option>
+    <option value="moto" {% if tipo == "moto" %}selected{% endif %}>Moto</option>
+  </select>
+  <label for="estado">Estado</label>
+  <select id="estado" name="estado">
+    <option value="">Todos</option>
+    <option value="libre" {% if estado == "libre" %}selected{% endif %}>Libre</option>
+    <option value="ocupada" {% if estado == "ocupada" %}selected{% endif %}>Ocupada</option>
+    <option value="deshabilitada" {% if estado == "deshabilitada" %}selected{% endif %}>Deshabilitada</option>
+  </select>
+  <button type="submit">Filtrar</button>
+  <a href="{{ url_for('celda.celda_nueva') }}">Nueva celda</a>
+</form>
+
+{% if celdas %}
+<table>
+  <thead>
+    <tr><th>Código</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr>
+  </thead>
+  <tbody>
+    {% for c in celdas %}
+    {% set e = estado_de(c) %}
+    <tr>
+      <td>{{ c.codigo }}</td>
+      <td>{{ c.tipo }}</td>
+      <td>
+        {% if e == "libre" %}<span class="tag tag-ok">Libre</span>
+        {% elif e == "ocupada" %}<span class="tag tag-warn">Ocupada</span>
+        {% else %}<span class="tag tag-off">Deshabilitada</span>{% endif %}
+      </td>
+      <td>
+        {% if c.ocupada %}
+          <button type="button" disabled>Editar</button>
+        {% else %}
+          <a href="{{ url_for('celda.celda_editar', id_celda=c.id) }}">Editar</a>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('celda.celda_estado', id_celda=c.id) }}"
+              style="display:inline"
+              {% if c.activa %}onsubmit="return confirm('¿Deshabilitar la celda {{ c.codigo }}?');"{% endif %}>
+          <button type="submit" {% if c.ocupada %}disabled{% endif %}>
+            {{ "Deshabilitar" if c.activa else "Habilitar" }}
+          </button>
+        </form>
+
+        <form method="post" action="{{ url_for('celda.celda_eliminar', id_celda=c.id) }}"
+              style="display:inline"
+              onsubmit="return confirm('¿Eliminar la celda {{ c.codigo }}? Solo es posible si nunca tuvo entradas.');">
+          <button type="submit" {% if c.ocupada %}disabled{% endif %}>Eliminar</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Sin resultados.</p>
+{% endif %}
+{% endblock %}

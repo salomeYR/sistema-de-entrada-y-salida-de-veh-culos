@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h2>{{ titulo }}</h2>
+
+<form method="post">
+  <label for="nombre">Nombre</label>
+  <input type="text" id="nombre" name="nombre" value="{{ datos.nombre }}" maxlength="100" required>
+
+  <label for="documento">Documento</label>
+  <input type="text" id="documento" name="documento" value="{{ datos.documento }}" maxlength="20" required>
+
+  <label for="telefono">Teléfono (opcional)</label>
+  <input type="text" id="telefono" name="telefono" value="{{ datos.telefono }}" maxlength="20">
+
+  <div class="acciones">
+    <button type="submit">Guardar usuario</button>
+    <a href="{{ cancelar }}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

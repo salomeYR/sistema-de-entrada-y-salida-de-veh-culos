@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from app import db
 
 
@@ -8,6 +8,7 @@ class Usuario(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     documento = db.Column(db.String(20), unique=True, nullable=False)
     telefono = db.Column(db.String(20))
+    activo = db.Column(db.Boolean, default=True, nullable=False)  # iteración 2
     vehiculos = db.relationship("Vehiculo", backref="usuario")
 
 
@@ -17,6 +18,11 @@ class Vehiculo(db.Model):
     tipo = db.Column(db.String(20), nullable=False)  # carro / moto
     mensualidad_vence = db.Column(db.Date, nullable=False)
     id_usuario = db.Column(db.Integer, db.ForeignKey("usuario.id"), nullable=False)
+    activo = db.Column(db.Boolean, default=True, nullable=False)  # iteración 2
+
+    @property
+    def mensualidad_vigente(self):
+        return self.mensualidad_vence >= date.today()
 
 
 class Celda(db.Model):
@@ -25,6 +31,7 @@ class Celda(db.Model):
     codigo = db.Column(db.String(10), unique=True, nullable=False)
     tipo = db.Column(db.String(20), nullable=False)  # carro / moto
     ocupada = db.Column(db.Boolean, default=False, nullable=False)
+    activa = db.Column(db.Boolean, default=True, nullable=False)  # iteración 2
 
 
 class RegistroAcceso(db.Model):
